@@ -1,0 +1,292 @@
+<!-- Pierre-André Le Ny - http://www.lenyconseil.fr -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JADIS</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="theme-color" content="#000000"/>
+    <meta name="description" content=""/>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="assets/css/Control.Geocoder.css" />
+    <link rel="stylesheet" href="assets/leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.css"/>
+    <link rel="stylesheet" href="assets/css/leaflet.loader.css" />
+    <link rel="stylesheet" href="assets/css/jadis.css"/>
+
+    <link rel="icon" sizes="196x196" href="assets/img/favicon-backthen-196.png"/>
+    <link rel="icon" type="image/x-icon" href="assets/img/favicon-backthen.ico"/>
+
+    <script src="https://kit.fontawesome.com/3a1bf36dfe.js" crossorigin="anonymous"></script>  
+  </head>
+  <body>
+    <!--
+    <div id="box">
+      <p></p>
+      <div id="titre">
+        <center>
+          <h1>GeoHistoricalData</h1>
+          <p>Données issues de la vectorisation Cassini</p>
+          <a href="#"><img src="icon_fleche_bas.png" id="toggle_icon" onclick="toggle_visibility('legend');changeImage();" alt="Afficher la légende"/></a>
+        </center>
+      </div>
+      <div id="legend" style="display:none;">
+        <h2>Legend</h2>
+        <h3>Tableau d'assemblage</h3>
+        <img src="https://geohistoricaldata.org/geoserver/cassini/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=cassini:france_cassini_table_assemblage" width="10"/>  
+        <h3>Voies</h3>
+        <img src="https://geohistoricaldata.org/geoserver/cassini/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=cassini:france_cassini&scale=1000000" width="75"/>
+        <h3>Surfaces</h3>
+        <img src="https://geohistoricaldata.org/geoserver/cassini/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=cassini:france_cassini_taches_urbaines" width="75"/>
+        <h3>Hydrographie linéaire et surfacique</h3>
+        <img src="https://geohistoricaldata.org/geoserver/cassini/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=cassini:france_cassini_hydro&scale=1000000" width="10" /><br>
+        <img src="https://geohistoricaldata.org/geoserver/cassini/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=cassini:france_cassini_surfaces_hydro" width="10"/>
+        <h2>Cassini layer opacity</h2>
+        <input id="slide" type="range" min="0" max="1" step="0.1" value="1" onchange="updateOpacity(this.value)"><br>
+        <input type="checkbox" id="cassini-wms" value="Cassini WMS" onclick="LayerState('cassini-wms', ign_cassini);" checked><label>Cassini-WMS</label>    
+        <p></p>
+      </div>
+    </div>
+    -->
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <div class="navbar-icon-container">
+            <a href="#" class="navbar-icon pull-right visible-xs" id="nav-btn"><i class="fa fa-bars fa-lg white"></i></a>
+          </div>
+          <a class="navbar-brand" href="#"><img src="assets/img/jadis_logo.svg" alt="JadisLogo"/></a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <!--
+          <form class="navbar-form navbar-right" role="search">
+            <div class="form-group has-feedback">
+                <input id="searchbox" type="text" placeholder="Search" class="form-control">
+                <span id="searchicon" class="fa fa-search form-control-feedback"></span>
+            </div>
+          </form>
+          -->
+          <ul class="nav navbar-nav">
+            <!--
+            <li class="dropdown">
+              <a id="toolsDrop" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-globe white"></i>&nbsp;&nbsp;Tools <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="full-extent-btn"><i class="fa fa-arrows-alt"></i>&nbsp;&nbsp;Zoom To Full Extent</a></li>
+                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="legend-btn"><i class="fa fa-picture-o"></i>&nbsp;&nbsp;Show Legend</a></li>
+              </ul>
+            </li>
+            -->
+            <li class="dropdown">
+              <a id="levelDrop" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-dot-circle-o white"></i>&nbsp;&nbsp;Ville<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="paris-btn">&nbsp;&nbsp;Paris</a></li>
+              </ul>
+            </li>
+           <li>
+           <p class="navbar-text"><!--<i class="fa fa-calendar-o white" aria-hidden="true"></i>&nbsp;&nbsp;-->
+Sélectionner l'année</p>
+           </li>
+           <li>
+             <p><select style="width:75px;" name="selectYear" id="selectYear" onchange="selectYearUpdate()" size="1">
+               <option></option>
+             </select></p>
+           </li>
+           <p class="navbar-text"><!--<i class="fa fa-map white" aria-hidden="true"></i>&nbsp;&nbsp;-->Carte</p>
+           <li>
+             <p><select style="width:300px;" name="selectMap" id="selectMap" onchange="selectMapUpdate()" size="1">
+               <option></option>
+             </select></p>
+           </li>
+           </li>
+           <p class="navbar-text">Score : <a id="scores-print"></a></p>
+           <li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="about-btn"><i class="fa fa-question-circle white"></i>&nbsp;&nbsp;Projet</a></li>
+            <li><a class="nav-link" href="https://gallica.bnf.fr/ark:/12148/btv1b53099774f" target="_blank" data-toggle="collapse" data-target=".navbar-collapse.in" id="see-on"><i class="fa fa-globe-africa white"></i>&nbsp;&nbsp;Voir sur Gallica</a></li>
+          </ul>
+        </div><!--/.navbar-collapse -->
+      </div>
+    </div>
+
+    <div id="container">
+      <!--
+      <div id="sidebar">
+        <div class="sidebar-wrapper">
+          <div class="panel panel-default" id="features">
+            <div class="panel-heading">
+              <h3 class="panel-title">Points of Interest
+              <button type="button" class="btn btn-xs btn-default pull-right" id="sidebar-hide-btn"><i class="fa fa-chevron-left"></i></button></h3>
+            </div>
+            <div class="panel-body">
+              <div class="row">
+                <div class="col-xs-8 col-md-8">
+                  <input type="text" class="form-control search" placeholder="Filter" />
+                </div>
+                <div class="col-xs-4 col-md-4">
+                  <button type="button" class="btn btn-primary pull-right sort" data-sort="feature-name" id="sort-btn"><i class="fa fa-sort"></i>&nbsp;&nbsp;Sort</button>
+                </div>
+              </div>
+            </div>
+            <div class="sidebar-table">
+              <table class="table table-hover" id="feature-list">
+                <thead class="hidden">
+                  <tr>
+                    <th>Icon</th>
+                  <tr>
+                  <tr>
+                    <th>Name</th>
+                  <tr>
+                  <tr>
+                    <th>Chevron</th>
+                  <tr>
+                </thead>
+                <tbody class="list"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      -->
+      <div id="map"></div>
+    </div>
+    <div class="loader"></div>
+    <div id="loading">
+      <div class="loading-indicator">
+        <div class="progress progress-striped active">
+          <div class="progress-bar progress-bar-info progress-bar-full"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">À propos du projet JADIS</h4>
+          </div>
+          <div class="modal-body">
+            <ul class="nav nav-tabs" id="aboutTabs">
+              <li class="active"><a href="#about" data-toggle="tab"><i class="fa fa-bookmark"></i>&nbsp;À propos</a></li>
+              <li><a href="#download" data-toggle="tab"><i class="fa fa-cloud-download"></i>&nbsp;Télécharger</a></li>
+              <li><a href="#disclaimer" data-toggle="tab"><i class="fa fa-book"></i>&nbsp;License</a></li>
+            </ul>
+            <div class="tab-content" id="aboutTabsContent">
+              <div class="tab-pane fade active in" id="about">
+                <p>
+                  Le projet JADIS est issu d'une collaboration scientifique entre la Bibliothèque nationale de France (BnF) et l'Ecole Polytechnique Fédérale de Lausanne (EPFL). Les buts du projet sont les suivants: 
+                  <ol type="1">
+                  <li>Développer un algorithme permettant de <b>géolocaliser</b> et réaligner automatiquement les collections cartographiques avec une précision au niveau de la rue.</li>
+                  <li>Réaligner les résultats sur la base de données des <b>noms de rues</b> historiques pour permettre la fouille des cartes de Paris par les noms de rues d’époque. </li>
+                </ol>
+                </p>
+                <p>
+                  La part du projet visible en ligne correspond principalement au second objectif. L'essentiel du projet consiste cependant à développer un algorithme permettant de géolocaliser automatiquement les cartes, en faisant appel à des technologies avancées d'intelligence artificielle, telles que les réseaux de neurones. Ce développement s'inscrit dans le cadre de la <b>recherche expérimentale</b> en humanités digitales et géospatiales. Le programme développé est entièrement disponible en libre-accès (voir l'onglet Téléchargement).
+                </p>
+                <p>
+                  L'algorithme comprend deux axes principaux. Le premier vise à vectoriser automatiquement les cartes à l'aide d'un <b>réseau neuronal</b>. Le second vise à créer un réseau de similarité pour réaligner les cartes entre elles. Le tronc principal du programme permet ensuite d'identifier les <b>similarités géométriques</b> entre les cartes vectorisées pour déterminer la position des cartes les unes par rapport aux autres et également par rapport au tissu urbain actuel.
+                </p>
+                <p>
+                  Le visualiseur JADIS en ligne permet de replacer les cartes automatiquement géolocalisées sur une carte actuelle et de comparer ces dernières. À titre expérimental, les résultats de la <b>vectorisation</b> automatique ("Îlots vectorisés") et de l'extraction du <b>réseau viaire</b> ("Réseau viaire filaire") sont également superposables à la carte. L'estimation de la "Déformation de la carte" est également disponible, sous la forme d'une carte colorée, sur laquelle les zones sombres indiquent les zones probablement peu déformées. Les zones colorées s'étalent sur plusieurs nuances de rouge, de rose et de bleu, où les régions bleutées indiquent une <b>déformation verticale</b> (positive ou négative) et où les régions rouges indiquent une plus forte <b>déformation horizontale</b> (ibidem).
+                </p>
+              </div>
+              <div id="disclaimer" class="tab-pane fade">
+                <p><a href="https://creativecommons.org/licenses/by/2.0/" target="_blank">Creative Commons Attribution 2.0</a>.</p>
+              </div>
+              <div id="download" class="tab-pane fade">
+                <p>Les <b>données</b> utilisées par le site web, en particulier les couches d'information des cartes sont disponibles en libre-accès sur <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank">Github Pages LIEN À AJOUTER</a>.</p>
+                <p>Les <b>images</b> de cartes sont téléchargeable gratuitement sur l'<a href="http://api.bnf.fr/api-iiif-de-recuperation-des-images-de-gallica" target="_blank">API IIIF de récupération des images de Gallica</a>.</p>
+                <p>Finalement, l'<b>algorithme</b> développé pour géolocaliser les cartes automatiquement et pour créer les couches d'information est disponible en libre-accès sur <a href="http://api.bnf.fr/api-iiif-de-recuperation-des-images-de-gallica" target="_blank">Github LIEN À AJOUTER</a>.</p>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!--
+    <div class="modal fade" id="legendModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Map Legend</h4>
+          </div>
+          <div class="modal-body">
+            <h5>Sheets</h5>
+            <img src="https://geohistoricaldata.org/geoserver/cassini/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=cassini:france_cassini_table_assemblage" width="75"/>  
+            <h5>Roads</h5>
+            <img src="https://geohistoricaldata.org/geoserver/cassini/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=cassini:france_cassini&scale=1000000" width="75"/>
+            <h5>Land Use</h5>
+            <img src="https://geohistoricaldata.org/geoserver/cassini/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=cassini:france_cassini_taches_urbaines" width="75"/>
+            <h5>Linear Hydrography</h5>
+            <img src="https://geohistoricaldata.org/geoserver/cassini/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=cassini:france_cassini_hydro&scale=1000000" width="75" />
+            <h5>Areal Hydrography</h5>
+            <img src="https://geohistoricaldata.org/geoserver/cassini/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=cassini:france_cassini_surfaces_hydro" width="75"/>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>-->
+        <!--</div>--><!-- /.modal-content -->
+      <!--</div>--><!-- /.modal-dialog -->
+    <!--</div>--><!-- /.modal --> 
+
+    <div class="modal fade" id="featureModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title text-primary" id="feature-title"></h4>
+          </div>
+          <div class="modal-body" id="feature-info"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div class="modal fade" id="attributionModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">
+              <p>
+                Bibliothèque nationale de France (BnF). 2020.
+              </p>
+              <p>
+                Basé sur le site web de <a href='http://geohistoricaldata.org' target="_blank">GeoHistoricalData</a>. 
+              </p>
+            </h4>
+          </div>
+          <div class="modal-body">
+            <div id="attribution"></div>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal --> 
+
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="assets/js/jquery.csv.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet-src.js"></script>
+    <script src="assets/js/Control.Geocoder.js"></script>
+    <script src="assets/js/leaflet-tilelayer-wmts.js"></script>
+    <script src="assets/js/Control.FullScreen.js"></script>
+    <script src="assets/leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.js"></script>
+    <script src="assets/js/proj4.js"></script>
+    <script src="assets/js/proj4leaflet.js"></script>
+    <script src="assets/js/Leaflet-WFST.src.js"></script>
+    <script src="assets/js/Leaflet.ImageOverlay.Rotated.js"></script>
+    <script src="assets/js/leaflet.loader.js"></script>
+    <script src="assets/js/jadis.js"></script>
+  </body>
+</html>
