@@ -6,8 +6,8 @@ $(window).resize(function() {
 var layerControl, geocoderControl, loaded_maps, map;
 var groupedOverlays, baseLayers, thinnedLayer;
 
-var blankUrl = 'https://rpetitpierre.github.io/assets/img/blank.png';
-var selectedMap = 'btv1b53099774f';
+var blankUrl = 'https://bnf-jadis.github.io/assets/img/blank.png';
+var selectedMap = 'btv1b53029027w';
 var selectedYear = 0;
 var transparent = false;
 var firstTransparencyActivation = true, firstVectorizedActivation = true;
@@ -109,7 +109,7 @@ function init(){
 	  
 	    var jsonObject = request.response;
 
-	    for (var year = 1760; year <= 1949; year++) {
+	    for (var year = 1950; year >= 1770; year--) {
 
 			var subset = $.grep(jsonObject, function( n, i ) {
 			  return n.date == year;
@@ -119,11 +119,16 @@ function init(){
 				var optionElement = document.createElement("option");
 			    optionElement.setAttribute("value", year.toString());
 
+			    if (year == 1894){
+			    	optionElement.setAttribute("selected", true);
+			    }
+
 			    var textNode = document.createTextNode(year.toString());
 			    optionElement.appendChild(textNode);
 			    document.getElementById("selectYear").appendChild(optionElement);
 			}
 	    }
+	    selectYearUpdate()
 	  }
 	})();
 
@@ -158,32 +163,17 @@ function init(){
 	L.control.scale().addTo(map);
 
 	var leaflet = 1;
-	var ark = 'btv1b53099774f';
-	var geolocalisation = [[48.87798462,  2.29474838],[48.83018192,  2.29481292], [48.83024075,  2.39558607], [48.87804344,  2.39552153]];
+	var ark = selectedMap;
+	var geolocalisation = [[48.910531626013096, 2.2427913673456756],[48.80798996500141, 2.2428784991569115], 
+						   [48.80805862730653, 2.429786776654294], [48.910600288318214, 2.4296996483981594]];
 
-	updateMap(ark, geolocalisation, leaflet, 61, true);
+	updateMap(ark, geolocalisation, leaflet, 0.55, true);
 
 	map.addLayer(loaded_maps.base_map_low)
 
 }
 
 init()
-
-/*
-var thinnedMapUrl = 'https://bnf-jadis.github.io/export/thinned/12148_' + selectedMap + 'f1.json';
-var request_ = initRequest(thinnedMapUrl);
-
-request_.onload = function() {
-    var jsonTable = request_.response;
-    var thinned = new L.polyline(jsonTable, {color: '#00225C', weight: 1.5, opacity: 0.7});
-    groupedOverlays["Couches"]["Réseau viaire"] = thinned
-    var options = { collapsed: isCollapsed };
-
-    layerControl = L.control.groupedLayers(baseLayers, groupedOverlays, options).addTo(map);
-
-	var geocoder = new L.Control.Geocoder.Nominatim();
-	geocoderControl = L.Control.geocoder({geocoder: geocoder}).addTo(map);
-}*/
 
 
 // Location
@@ -235,27 +225,26 @@ function updateMap(ark, geolocalisation, leaflet, score, init) {
 	document.getElementById("scores-print").innerHTML = qualitative_score;
 
 	if (ark != '') {
-
 		if (!init){
 			geocoderControl.remove(map)
-
 			for (i in layerControl._layers) {
-			var layer = layerControl._layers[i].layer;
-			layerControl.removeLayer(layer);
-			if (map.hasLayer(layer)) {
-			    map.removeLayer(layer);
+				var layer = layerControl._layers[i].layer;
+				layerControl.removeLayer(layer);
+				if (map.hasLayer(layer)) {
+				    map.removeLayer(layer);
 				}
-		    }
+			}
 		}
 		
 		var imageUrl = {
 			"high": 'https://gallica.bnf.fr/iiif/ark:/12148/' + ark + '/f' + leaflet + '/full/full/0/native.jpg',
-			"medium": 'https://gallica.bnf.fr/iiif/ark:/12148/' + ark + '/f' + leaflet + '/full/4000,3000/0/native.jpg',
-			"low": 'https://gallica.bnf.fr/iiif/ark:/12148/' + ark + '/f' + leaflet + '/full/3000,2250/0/native.jpg',
+			"medium": 'https://gallica.bnf.fr/iiif/ark:/12148/' + ark + '/f' + leaflet + '/full/4400,3600/0/native.jpg',
+			"low": 'https://gallica.bnf.fr/iiif/ark:/12148/' + ark + '/f' + leaflet + '/full/3300,2400/0/native.jpg',
 		};
 
 		var vectorizedMapUrl = 'https://bnf-jadis.github.io/export/maps/12148_' + ark + 'f' + leaflet + '.png';
 		var deformationMapUrl = 'https://bnf-jadis.github.io/export/deformation/12148_' + ark + 'f' + leaflet + '.png';
+		var thinnedMapUrl = 'https://bnf-jadis.github.io/export/vectorized/12148_' + ark + 'f' + leaflet + '.json';
 
 		var topleft    = L.latLng(geolocalisation[0][0], geolocalisation[0][1]), 
 			topright   = L.latLng(geolocalisation[3][0], geolocalisation[3][1]), 
@@ -300,13 +289,24 @@ function updateMap(ark, geolocalisation, leaflet, score, init) {
 	    }
 	    
 		layerControl = L.control.groupedLayers(baseLayers, groupedOverlays, options).addTo(map);
-
-		if (!init){
-	    	geocoderControl.remove(map);
-	    }
 		
-		var geocoder = new L.Control.Geocoder.Nominatim();
-		geocoderControl = L.Control.geocoder({geocoder: geocoder}).addTo(map);
+		var request_ = initRequest(thinnedMapUrl);
+
+		request_.onload = function() {
+		    var jsonTable = request_.response;
+		    var thinned = new L.polyline(jsonTable, {color: '#00225C', weight: 1.5, opacity: 0.7});
+		    groupedOverlays["Couches"]["Réseau viaire"] = thinned;
+		    var options = { collapsed: isCollapsed };
+
+		    for (layer in layerControl._layers) {
+		    	if (layerControl._layers[layer].name == "Réseau viaire"){
+		    		layerControl._layers[layer].layer = thinned;
+		    	}
+		    }
+
+		    var geocoder = new L.Control.Geocoder.Nominatim();
+			geocoderControl = L.Control.geocoder({geocoder: geocoder}).addTo(map);
+		}
 
 		updateOpacity();
 
@@ -454,10 +454,6 @@ function selectMapUpdate() {
 	  	var subset = $.grep(jsonObject, function( n, i ) {
 		  return n.date == selectedYear;
 		});
-
-		console.log(selectedYear)
-		console.log(jsonObject)
-		console.log(subset)
 
 	  	selectedMap = subset[indice - 1]['ark'].substring(6, 100);
 	  	
