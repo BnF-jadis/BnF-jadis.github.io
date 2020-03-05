@@ -242,7 +242,8 @@ function updateMap(ark, geolocalisation, leaflet, score, init) {
 			"low": 'https://gallica.bnf.fr/iiif/ark:/12148/' + ark + '/f' + leaflet + '/full/3000,2250/0/native.jpg',
 		};
 
-		var vectorizedMapUrl = 'https://rpetitpierre.github.io/export/maps/12148_' + ark + leaflet + '.png';
+		var vectorizedMapUrl = 'https://rpetitpierre.github.io/export/maps/12148_' + ark + 'f' + leaflet + '.png';
+		var deformationMapUrl = 'https://rpetitpierre.github.io/export/deformation/12148_' + ark + 'f' + leaflet + '.png';
 
 		var topleft    = L.latLng(geolocalisation[0][0], geolocalisation[0][1]), 
 			topright   = L.latLng(geolocalisation[3][0], geolocalisation[3][1]), 
@@ -253,7 +254,7 @@ function updateMap(ark, geolocalisation, leaflet, score, init) {
 
 			vectorized_map:layerImageRotated(vectorizedMapUrl, topleft, topright, bottomleft),
 			transparency:layerImageRotated(blankUrl, topleft, topright, bottomleft),
-			deformation:layerImageRotated(blankUrl, topleft, topright, bottomleft),
+			deformation:layerImageRotated(deformationMapUrl, topleft, topright, bottomleft),
 			road_network:layerImageRotated(blankUrl, topleft, topright, bottomleft),
 			
 			base_map_high:layerImageRotated(imageUrl['high'], topleft, topright, bottomleft),
