@@ -103,13 +103,27 @@ function init(){
 	(function() {
 	  document.getElementById("selectMap").style.marginTop = 15 + "px";
 	  document.getElementById("selectYear").style.marginTop = 15 + "px";
-	  for (var i = 1760; i <= 1945; i++) {
-	  	var optionElement = document.createElement("option");
-	    optionElement.setAttribute("value", i.toString());
 
-	    var textNode = document.createTextNode(i.toString());
-	    optionElement.appendChild(textNode);
-	    document.getElementById("selectYear").appendChild(optionElement);
+	  var request = initRequest('https://rpetitpierre.github.io/assets/data/df_website.json');
+	  request.onload = function() {
+	  
+	    var jsonObject = request.response;
+
+	    for (var year = 1760; year <= 1949; year++) {
+
+			var subset = $.grep(jsonObject, function( n, i ) {
+			  return n.date == year;
+			});
+
+			if (subset.length > 0) {
+				var optionElement = document.createElement("option");
+			    optionElement.setAttribute("value", year.toString());
+
+			    var textNode = document.createTextNode(year.toString());
+			    optionElement.appendChild(textNode);
+			    document.getElementById("selectYear").appendChild(optionElement);
+			}
+	    }
 	  }
 	})();
 
@@ -147,7 +161,7 @@ function init(){
 	var ark = 'btv1b53099774f';
 	var geolocalisation = [[48.87798462,  2.29474838],[48.83018192,  2.29481292], [48.83024075,  2.39558607], [48.87804344,  2.39552153]];
 
-	updateMap(ark, geolocalisation, leaflet, 0, true);
+	updateMap(ark, geolocalisation, leaflet, 61, true);
 
 	map.addLayer(loaded_maps.base_map_low)
 
@@ -249,7 +263,7 @@ function updateMap(ark, geolocalisation, leaflet, score, init) {
 
 		var options = { collapsed: isCollapsed };
 		
-		map.setView([48.855426, 2.345846], 14);
+		map.setView([48.855426, 2.345846], 13);
 
 	    baseLayers = {
 			"Basse résolution": loaded_maps.base_map_low,
@@ -365,7 +379,7 @@ couche intitulée \"Déformation de la carte\". \n \n");
 
 function selectYearUpdate() {
 
-	selectedYear = document.getElementById("selectYear").selectedIndex + 1759;
+	selectedYear = document.getElementById("selectYear")[document.getElementById("selectYear").selectedIndex]['label'];
 
 	var request = initRequest('https://rpetitpierre.github.io/assets/data/df_website.json');
 	request.onload = function() {
@@ -374,6 +388,7 @@ function selectYearUpdate() {
 	  var subset = $.grep(jsonObject, function( n, i ) {
 		  return n.date == selectedYear;
 		});
+
 
 	  while (document.getElementById("selectMap").firstChild) {
 		document.getElementById("selectMap").removeChild(document.getElementById("selectMap").firstChild);
@@ -432,7 +447,8 @@ function selectMapUpdate() {
 	  	
 	  	var geolocalisation = subset[indice - 1]['geolocalisation'];
 	  	var leaflet = subset[indice - 1]['leaflet'];
-	  	var score = subset[indice - 1]['geoloc_score'];
+	  	var score = subset[indice - 1]['confidence'];
+	  	console.log(subset[indice - 1])
 
 		var ark = selectedMap;
 
