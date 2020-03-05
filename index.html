@@ -103,7 +103,7 @@ Sélectionner l'année</p>
              </select></p>
            </li>
            </li>
-           <p class="navbar-text">Score : <a id="scores-print"></a></p>
+           <p class="navbar-text">Confiance <a id="scores-print"></a>%</p>
            <li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
@@ -173,6 +173,7 @@ Sélectionner l'année</p>
           <div class="modal-body">
             <ul class="nav nav-tabs" id="aboutTabs">
               <li class="active"><a href="#about" data-toggle="tab"><i class="fa fa-bookmark"></i>&nbsp;À propos</a></li>
+              <li><a href="#faq" data-toggle="tab"><i class="fa fa-question-circle"></i>&nbsp;FAQ</a></li>
               <li><a href="#download" data-toggle="tab"><i class="fa fa-cloud-download"></i>&nbsp;Télécharger</a></li>
               <li><a href="#disclaimer" data-toggle="tab"><i class="fa fa-book"></i>&nbsp;License</a></li>
             </ul>
@@ -197,6 +198,16 @@ Sélectionner l'année</p>
               </div>
               <div id="disclaimer" class="tab-pane fade">
                 <p><a href="https://creativecommons.org/licenses/by/2.0/" target="_blank">Creative Commons Attribution 2.0</a>.</p>
+              </div>
+              <div id="faq" class="tab-pane fade">
+                <p><b>Comment les cartes ont-elles été géolocalisées ?</b></p>
+                <p>Il n'y a pas d'intervention humaine dans le processus de géolocalisation des cartes. Un réseau de neurones ainsi qu'un algorithme de réalignement sont utilisés. De même, pour la segmentation des îlots et la vectorisation des rues, l'intelligence artificielle fonctionne sans intervention. La seule étape effectuée manuellement consiste à constituer le corpus de cartes présenté sur ce site. L'automatisation de cette étape longue et coûteuse nous a permis de vous proposer autant de données géoréférencée, mais elle explique également que certaines cartes peuvent être décalées, même lorsque le plan est géométriquement correct, car cette technologie est encore en développement.</p>
+                <p><b>Pourquoi les cartes historiques ne se superposent pas toujours à la carte actuelle ?</b></p>
+                <p>Outre l'automatisation de la géolocalisation (lire ci-dessus), les cartes anciennes sont très souvent déformées. La déformation résulte non seulement de l'usure de l'objet, mais peut également être causée par son conditionnement. Certaines cartes, par exemple, ont été découpées en plusieurs morceaux et collées sur un fond de toile. D'autre part, il faut retenir que jusqu'au début du XXème siècle, les cartes ne sont généralement pas basées sur une vue aérienne de la ville. Les imprécisions lors des relevés au sol sont très fréquentes. De même, la précision peut être également impactée par le processus de gravure et d'impression de la carte. Finalement, de nombreuses cartes du corpus sont stylisées. Les rues et les îlots peuvent ne pas être représentés de manière réaliste, par exemple pour des raisons de lisibilité. Des ellipses spatiales sont également souvent utilisées pour permettre de représenter sur le plan de ville des lieux périphériques plus éloignés.</p>
+                <p><b>Quel moteur de recherche permet de géoréférencer les noms de lieux ?</b></p>
+                <p>Le requêtage de deux bases de données permettent de retrouver les noms de lieux. Pour les données contemporaines, le moteur de recherche Nominatim d'OpenStreetMap est sollicité. Pour les rues et les lieux n'existant plus aujourd'hui, une recherche est effectuée dans la base de données des noms de rues issue du <a href="https://dev.clariah.nl/files/dh2019/boa/0878.html" target="_blank">projet Repopulating Paris</a> de l'Institut national d'Histoire de l'Art et de l'Ecole Polytechnique Fédérale de Lausanne. Ce projet a permis de géoréférencer plusieurs milliers de noms de rues, correspondant à plusieurs millions d'adresses.</p>
+                <p><b>Comment lire la couche de déformation des cartes ? À quoi correspond-elle ?</b></p>
+                <p>La couche de déformation des cartes est une estimation de la déformation des cartes par rapport à la géolocalisation calculée. Elle ne prend en compte que les déformations de moins de 250 pixels au niveau des points d'amer qui permettent de réaligner la carte ancienne sur la carte actuelle. Par assertion, la déformation est considérée nulle aux bords de la carte. Cela n'est évidemment pas toujours le cas, mais l'extension de la déformation jusqu'au bord de la carte ne serait pas plus correcte. Les régions sombres correspondent à un score d'alignement très élevé, tandis que les régions plus lumineuses correspondent à une déformation probablement plus importante. Les aires rouges indiquent à une déformation horizontale, tandis que les aires bleues signalent une déformation verticale. Les aires intermédiaires roses ou violettes indiquent une déformation à la fois verticale et horizontale.</p>
               </div>
               <div id="download" class="tab-pane fade">
                 <p>Les <b>données</b> utilisées par le site web, en particulier les couches d'information des cartes sont disponibles en libre-accès sur <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank">Github Pages LIEN À AJOUTER</a>.</p>
