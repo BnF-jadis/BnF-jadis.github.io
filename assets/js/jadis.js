@@ -281,8 +281,7 @@ function updateMap(ark, geolocalisation, leaflet, score, init) {
 			}
 	    };
 
-	    groupedOverlays["Couches"]["Îlots"].setOpacity(0.5)
-	    groupedOverlays["Couches"]["Transparence"].setOpacity(0.)
+	    groupedOverlays["Couches"]["Transparence"].setOpacity(0.);
 
 	    if (!init){
 	    	layerControl.remove(map);
@@ -342,7 +341,7 @@ function updateMap(ark, geolocalisation, leaflet, score, init) {
 		loaded_maps.vectorized_map.on('add', function () {
 		if (firstVectorizedActivation) {
     		firstVectorizedActivation = false;
-    		 window.alert("VECTORISATION EXPÉRIMENTATLE \n\n\
+    		 window.alert("INFORMATION: Vectorisation expérimentale \n\n\
 Vous vous apprêtez à activer la vectorisation. Ce résultat accessoire de la recherche comporte des erreurs \n\
 et est présenté ici à titre d'expérmentation. \n \n");
     	}
@@ -465,7 +464,7 @@ function updateOpacity() {
 		baseLayers["Moyenne résolution"].setOpacity(0.3);
 		baseLayers["Haute résolution"].setOpacity(0.3);
 		groupedOverlays["Couches"]["Îlots"].setOpacity(0.15);
-		groupedOverlays["Couches"]["Déformation de la carte"].setOpacity(0.7);
+		groupedOverlays["Couches"]["Déformation de la carte"].setOpacity(0.5);
 
 	}
 	else {
@@ -473,7 +472,7 @@ function updateOpacity() {
 		baseLayers["Moyenne résolution"].setOpacity(1);
 		baseLayers["Haute résolution"].setOpacity(1);
 		groupedOverlays["Couches"]["Îlots"].setOpacity(0.5);
-		groupedOverlays["Couches"]["Déformation de la carte"].setOpacity(0.5);
+		groupedOverlays["Couches"]["Déformation de la carte"].setOpacity(0.7);
 	}
 }
 
