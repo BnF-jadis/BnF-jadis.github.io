@@ -104,7 +104,7 @@ function init(){
 	  document.getElementById("selectMap").style.marginTop = 15 + "px";
 	  document.getElementById("selectYear").style.marginTop = 15 + "px";
 
-	  var request = initRequest('https://rpetitpierre.github.io/assets/data/df_website.json');
+	  var request = initRequest('https://bnf-jadis.github.io/assets/data/df_website.json');
 	  request.onload = function() {
 	  
 	    var jsonObject = request.response;
@@ -170,7 +170,7 @@ function init(){
 init()
 
 /*
-var thinnedMapUrl = 'https://rpetitpierre.github.io/export/thinned/12148_' + selectedMap + 'f1.json';
+var thinnedMapUrl = 'https://bnf-jadis.github.io/export/thinned/12148_' + selectedMap + 'f1.json';
 var request_ = initRequest(thinnedMapUrl);
 
 request_.onload = function() {
@@ -220,7 +220,19 @@ if (!L.Browser.touch) {
 
 function updateMap(ark, geolocalisation, leaflet, score, init) {
 
-	document.getElementById("scores-print").innerHTML = score;
+	var qualitative_score;
+
+	if (score < 0.5){
+		qualitative_score = 'très élevée';
+	}
+	else if (score < 0.6){
+		qualitative_score = 'élevée';
+	}
+	else{
+		qualitative_score = 'acceptable';
+	}
+
+	document.getElementById("scores-print").innerHTML = qualitative_score;
 
 	if (ark != '') {
 
@@ -242,8 +254,8 @@ function updateMap(ark, geolocalisation, leaflet, score, init) {
 			"low": 'https://gallica.bnf.fr/iiif/ark:/12148/' + ark + '/f' + leaflet + '/full/3000,2250/0/native.jpg',
 		};
 
-		var vectorizedMapUrl = 'https://rpetitpierre.github.io/export/maps/12148_' + ark + 'f' + leaflet + '.png';
-		var deformationMapUrl = 'https://rpetitpierre.github.io/export/deformation/12148_' + ark + 'f' + leaflet + '.png';
+		var vectorizedMapUrl = 'https://bnf-jadis.github.io/export/maps/12148_' + ark + 'f' + leaflet + '.png';
+		var deformationMapUrl = 'https://bnf-jadis.github.io/export/deformation/12148_' + ark + 'f' + leaflet + '.png';
 
 		var topleft    = L.latLng(geolocalisation[0][0], geolocalisation[0][1]), 
 			topright   = L.latLng(geolocalisation[3][0], geolocalisation[3][1]), 
@@ -381,7 +393,7 @@ function selectYearUpdate() {
 
 	selectedYear = document.getElementById("selectYear")[document.getElementById("selectYear").selectedIndex]['label'];
 
-	var request = initRequest('https://rpetitpierre.github.io/assets/data/df_website.json');
+	var request = initRequest('https://bnf-jadis.github.io/assets/data/df_website.json');
 	request.onload = function() {
 	  var jsonObject = request.response;
 
@@ -430,7 +442,7 @@ function selectYearUpdate() {
 
 function selectMapUpdate() {
 
-	var request = initRequest('https://rpetitpierre.github.io/assets/data/df_website.json');
+	var request = initRequest('https://bnf-jadis.github.io/assets/data/df_website.json');
 	request.onload = function() {
 	  
 	  var indice = document.getElementById("selectMap").selectedIndex;
@@ -443,12 +455,15 @@ function selectMapUpdate() {
 		  return n.date == selectedYear;
 		});
 
+		console.log(selectedYear)
+		console.log(jsonObject)
+		console.log(subset)
+
 	  	selectedMap = subset[indice - 1]['ark'].substring(6, 100);
 	  	
 	  	var geolocalisation = subset[indice - 1]['geolocalisation'];
 	  	var leaflet = subset[indice - 1]['leaflet'];
-	  	var score = subset[indice - 1]['confidence'];
-	  	console.log(subset[indice - 1])
+	  	var score = subset[indice - 1]['geoloc_score'];
 
 		var ark = selectedMap;
 
