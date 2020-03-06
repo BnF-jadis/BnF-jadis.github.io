@@ -109,7 +109,7 @@ function init(){
 	  
 	    var jsonObject = request.response;
 
-	    for (var year = 1950; year >= 1770; year--) {
+	    for (var year = 1950; year >= 1760; year--) {
 
 			var subset = $.grep(jsonObject, function( n, i ) {
 			  return n.date == year;
