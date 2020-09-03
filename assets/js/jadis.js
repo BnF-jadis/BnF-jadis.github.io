@@ -175,7 +175,6 @@ function init(){
 
 init()
 
-
 // Location
 map.locate({setView: true, maxZoom: 15});
 
@@ -183,6 +182,7 @@ function onLocationFound(e) {
     var radius = e.accuracy / 2;
     L.marker(e.latlng).addTo(map).bindPopup("Vous êtes dans un rayon de " + radius + " mètres de ce point").openPopup();
     L.circle(e.latlng, radius).addTo(map);
+    map.setView([48.855426, 2.345846], 13);
 }
 
 map.on('locationfound', onLocationFound);
